@@ -1,8 +1,28 @@
-require "bundler/setup"
-require "snapshot_association"
+require 'bundler/setup'
+require 'active_record'
+require_relative '../lib/snapshot_association'
+
+# obtain a DB connection
+ActiveRecord::Base.establish_connection(
+  adapter: :sqlite3,
+  database: ":memory:",
+  timeout: 500
+)
+ActiveRecord::Base.default_timezone = :utc
+
+# migrate test schema
+ActiveRecord::Migrator.migrate('spec/db/migrate')
+
+class Thing < ActiveRecord::Base
+  has_many :thing_events
+end
+
+class ThingEvent < ActiveRecord::Base
+  belongs_to :thing
+  snapshot :thing
+end
 
 RSpec.configure do |config|
-  # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"
 
   config.expect_with :rspec do |c|

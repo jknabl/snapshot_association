@@ -5,7 +5,6 @@ module SnapshotAssociation
      @base_klass = scope
      @snapshot_klass = snapshot_klass
      @old_column_mapping = column_mapping || {}
-
      register_callback(@base_klass, @snapshot_klass, @old_column_mapping)
    end
 
@@ -21,17 +20,19 @@ module SnapshotAssociation
 
    def self.snapshot_fields(scope, base_klass, snapshot_klass, old_column_mapping)
      shared_columns = shared_columns(base_klass, snapshot_klass)
+     association_name = snapshot_klass.to_s.downcase
+
      shared_columns.each do |name|
-       scope.write_attribute(name, scope.send(snapshot_klass.to_s.downcase).send(name.sub("#{snapshot_klass.to_s.downcase}_", "")))
+       scope.write_attribute(name, scope.send(association_name).send(name.sub("#{association_name}_", "")))
      end
 
-     old_columns = base_klass.columns.map(&:name).grep(Regexp.new snapshot_klass.to_s.downcase) - shared_columns
+     old_columns = base_klass.columns.map(&:name).grep(Regexp.new association_name) - shared_columns
 
      old_columns.each do |name|
-       old_column_key = name.gsub("#{snapshot_klass.to_s.downcase}_", '').to_sym
+       old_column_key = name.gsub("#{association_name}_", '').to_sym
        if old_column_mapping.key? old_column_key
          new_column_on_snapshot_klass = old_column_mapping[old_column_key]
-         scope.write_attribute(name, scope.send(snapshot_klass.to_s.downcase).send(new_column_on_snapshot_klass))
+         scope.write_attribute(name, scope.send(association_name).send(new_column_on_snapshot_klass))
        end
      end
    end

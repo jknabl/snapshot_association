@@ -1,4 +1,3 @@
-require 'active_record'
 module ActiveRecord
   class Base
     class << self
