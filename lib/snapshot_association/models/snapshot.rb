@@ -1,20 +1,26 @@
 module SnapshotAssociation
  class Snapshot
-
-   def initialize(scope, snapshot_klass, column_mapping)
+   attr_reader :base_klass, :snapshot_klass, :old_column_mapping
+   def initialize(scope, snapshot_klass, column_mapping={})
      @base_klass = scope
      @snapshot_klass = snapshot_klass
-     @old_column_mapping = column_mapping || {}
-     register_callback(@base_klass, @snapshot_klass, @old_column_mapping)
+     @old_column_mapping = column_mapping
    end
 
-   def register_callback(scope, snapshot_klass, old_column_mapping)
-     scope.class_eval do
+   def register_callback(snapshot_klass, old_column_mapping={}, callback_name: nil)
+     @base_klass.class_eval do
        method_name = "snapshot_#{snapshot_klass.to_s.downcase}_fields".to_sym
        define_method method_name do
-        SnapshotAssociation::Snapshot.snapshot_fields(self, scope, snapshot_klass, old_column_mapping)
+        SnapshotAssociation::Snapshot.snapshot_fields(self, self.class, snapshot_klass, old_column_mapping)
        end
-       send(:before_create, method_name)
+
+       callback_name = :before_create if callback_name.nil?
+       raise 'Must define a valid ActiveRecord::Callback on a snapshot association' unless ActiveRecord::Callbacks::CALLBACKS.include? callback_name.to_sym
+
+       callback_type = callback_name.to_s.split('_')[1]
+       raise 'Snapshot associations only valid on create or save callbacks.' unless ['save', 'create'].include? callback_type
+
+       send(callback_name, method_name)
      end
    end
 

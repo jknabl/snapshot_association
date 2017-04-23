@@ -1,5 +1,6 @@
 require 'bundler/setup'
 require 'active_record'
+require 'pry'
 require_relative '../lib/snapshot_association'
 
 # obtain a DB connection
