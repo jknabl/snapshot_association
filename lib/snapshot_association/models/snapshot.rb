@@ -8,10 +8,10 @@ module SnapshotAssociation
     end
 
     def register_callback(callback_name: nil)
-      @base_klass.class_exec(@snapshot_klass, @old_column_mapping) do |snapshot_klass, old_column_mapping|
-        method_name = "snapshot_#{snapshot_klass.to_s.downcase}_fields".to_sym
+      @base_klass.class_exec(self) do |scope|
+        method_name = "snapshot_#{scope.snapshot_klass.to_s.downcase}_fields".to_sym
         define_method method_name do
-          SnapshotAssociation::Snapshot.snapshot_fields(self, self.class, snapshot_klass, old_column_mapping)
+          SnapshotAssociation::Snapshot.snapshot_fields(self, scope.snapshot_klass, scope.old_column_mapping)
         end
 
         callback_name = :before_create if callback_name.nil?
@@ -24,8 +24,8 @@ module SnapshotAssociation
       end
     end
 
-    def self.snapshot_fields(scope, base_klass, snapshot_klass, old_column_mapping={})
-      shared_columns = shared_columns(base_klass, snapshot_klass)
+    def self.snapshot_fields(scope, snapshot_klass, old_column_mapping={})
+      shared_columns = shared_columns(scope.class, snapshot_klass)
       shared_columns.reject!{ |name| old_column_mapping.keys.include? "#{snapshot_klass.to_s.downcase}_#{name}".to_sym }
       association_name = snapshot_klass.to_s.downcase
       old_column_mapping.values.each { |v| shared_columns.delete(v) }
