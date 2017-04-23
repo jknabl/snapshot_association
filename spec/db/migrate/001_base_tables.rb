@@ -3,7 +3,7 @@ class BaseTables < ActiveRecord::Migration
     create_table :things do |t|
       t.column :name, :string
       t.column :email, :string
-      t.column :thing_event_renamed_email, :string
+      t.column :renamed_email, :string
     end
 
     create_table :thing_events do |t|

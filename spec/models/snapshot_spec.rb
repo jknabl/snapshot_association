@@ -1,16 +1,20 @@
 require 'spec_helper'
 
-t = Thing.new(name: 'asdfas', email: 'asdfas@adslfk.com')
-te = ThingEvent.new(name: 'asdfasf', description: 'adsfasdf', thing_name: 'asdfasdfasd', thing_email: 'asdfas')
-s = SnapshotAssociation::Snapshot.new(te.class, t.class, {})
+# t = Thing.new(name: 'asdfas', email: 'asdfas@adslfk.com')
+# te = ThingEvent.new(name: 'asdfasf', description: 'adsfasdf', thing_name: 'asdfasdfasd', thing_email: 'asdfas')
+# s = SnapshotAssociation::Snapshot.new(te.class, t.class, {})
 
 RSpec.describe 'SnapshotAssociation::Snapshot' do
+  after do
+    ThingEvent.reset_callbacks(:save)
+    ThingEvent.reset_callbacks(:create)
+  end
 
   describe '#initialize' do
     it 'sets ivars on initialization' do
       s = SnapshotAssociation::Snapshot.new(ThingEvent, Thing, {})
-      expect(s.base_klass).to eq te.class
-      expect(s.snapshot_klass).to eq t.class
+      expect(s.base_klass).to eq ThingEvent
+      expect(s.snapshot_klass).to eq Thing
       expect(s.old_column_mapping).to eq({})
     end
 
@@ -45,6 +49,40 @@ RSpec.describe 'SnapshotAssociation::Snapshot' do
     it 'raises if callback type is nonsense' do
       s = SnapshotAssociation::Snapshot.new(ThingEvent, Thing)
       expect{s.register_callback(callback_name: :before_bedtime)}.to raise_error 'Must define a valid ActiveRecord::Callback on a snapshot association'
+    end
+  end
+
+  describe 'Snapshot.snapshot_fields' do
+    it 'sets and persists snapshot fields on a base model' do
+      class ThingEvent < ActiveRecord::Base
+        snapshot :thing
+      end
+
+      t = Thing.create(name: 'asfdas', email: 'asdfas@asdlf.com', renamed_email: 'asfas@askdfjh.com')
+      te = ThingEvent.new(name: 'asfas', description: 'asdfas', thing: t)
+
+      [:thing_name, :thing_email].each do |attr|
+        expect(te.send(attr)).to be nil
+      end
+
+      te.save
+
+      [:thing_name, :thing_email].each do |attr|
+        expect(te.send(attr)).to eq t.send(attr.to_s.sub('thing_', ''))
+      end
+    end
+
+    it 'sets and persists snapshot fields with custom column mappings' do
+      class ThingEvent < ActiveRecord::Base
+        snapshot :thing, column_mapping: {renamed_email: 'thing_email'}
+      end
+
+      t = Thing.create(name: 'asfdas', email: 'asdfas@asdlf.com', renamed_email: 'asfas@askdfjh.com')
+      te = ThingEvent.new(name: 'asfas', description: 'asdfas', thing: t)
+
+      expect(te.thing_email).to be nil
+      te.save
+      expect(te.thing_email).to eq t.renamed_email
     end
   end
 end

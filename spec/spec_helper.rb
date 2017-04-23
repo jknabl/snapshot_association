@@ -20,7 +20,6 @@ end
 
 class ThingEvent < ActiveRecord::Base
   belongs_to :thing
-  snapshot :thing
 end
 
 RSpec.configure do |config|
