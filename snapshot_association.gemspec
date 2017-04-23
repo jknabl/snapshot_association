@@ -4,13 +4,13 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'snapshot_association/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "snapshot_association"
+  spec.name          = 'snapshot_association'
   spec.version       = SnapshotAssociation::VERSION
-  spec.authors       = ["Jason Knabl"]
-  spec.email         = ["jason.knabl@gmail.com"]
+  spec.authors       = ['Jason Knabl']
+  spec.email         = ['jason.knabl@gmail.com']
 
   spec.summary       = %q{Take 'snapshots' of data from an associated table on another base table in Rails.}
-  spec.homepage      = "http://www.github.com/jknabl"
+  spec.homepage      = 'http://www.github.com/jknabl'
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
