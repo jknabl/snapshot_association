@@ -23,7 +23,7 @@ RSpec.describe 'SnapshotAssociation::Snapshot' do
   describe '#register_callback' do
     it 'defines a before_create callback if no argument given' do
       s = SnapshotAssociation::Snapshot.new(ThingEvent, Thing)
-      s.register_callback(Thing)
+      s.register_callback
       all_callbacks = ThingEvent.send("_save_callbacks").to_a
       all_callbacks.push *ThingEvent.send("_create_callbacks")
       expect(all_callbacks.detect{ |c| (c.name == :create && c.kind == :before) && (c.filter == :snapshot_thing_fields) }).to_not be nil
@@ -31,7 +31,7 @@ RSpec.describe 'SnapshotAssociation::Snapshot' do
 
     it 'defines a custom callback if argument given' do
       s = SnapshotAssociation::Snapshot.new(ThingEvent, Thing)
-      s.register_callback(Thing, callback_name: :before_save)
+      s.register_callback(callback_name: :before_save)
       all_callbacks = ThingEvent.send("_save_callbacks").to_a
       all_callbacks.push *ThingEvent.send("_create_callbacks")
       expect(all_callbacks.detect{ |c| (c.name == :save && c.kind == :before) && (c.filter == :snapshot_thing_fields) }).to_not be nil
@@ -39,12 +39,12 @@ RSpec.describe 'SnapshotAssociation::Snapshot' do
 
     it 'raises if callback is not a save or create callback' do
       s = SnapshotAssociation::Snapshot.new(ThingEvent, Thing)
-      expect{s.register_callback(Thing, callback_name: :after_destroy)}.to raise_error 'Snapshot associations only valid on create or save callbacks.'
+      expect{s.register_callback(callback_name: :after_destroy)}.to raise_error 'Snapshot associations only valid on create or save callbacks.'
     end
 
     it 'raises if callback type is nonsense' do
       s = SnapshotAssociation::Snapshot.new(ThingEvent, Thing)
-      expect{s.register_callback(Thing, callback_name: :before_bedtime)}.to raise_error 'Must define a valid ActiveRecord::Callback on a snapshot association'
+      expect{s.register_callback(callback_name: :before_bedtime)}.to raise_error 'Must define a valid ActiveRecord::Callback on a snapshot association'
     end
   end
 end

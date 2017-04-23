@@ -7,8 +7,8 @@ module SnapshotAssociation
      @old_column_mapping = column_mapping
    end
 
-   def register_callback(snapshot_klass, old_column_mapping={}, callback_name: nil)
-     @base_klass.class_eval do
+   def register_callback(callback_name: nil)
+     @base_klass.class_exec(@snapshot_klass, @old_column_mapping) do |snapshot_klass, old_column_mapping|
        method_name = "snapshot_#{snapshot_klass.to_s.downcase}_fields".to_sym
        define_method method_name do
         SnapshotAssociation::Snapshot.snapshot_fields(self, self.class, snapshot_klass, old_column_mapping)
