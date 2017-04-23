@@ -28,4 +28,10 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  config.after do
+    # remove any callbacks we may have added dynamically during a test
+    ThingEvent.reset_callbacks(:save)
+    ThingEvent.reset_callbacks(:create)
+  end
 end
