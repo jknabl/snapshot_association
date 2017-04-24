@@ -4,13 +4,19 @@ Store a 'snapshot' of the state of columns on a class to denormalized columns on
 
 ## Installation
 
+If you plan to make local modifications to the code, you can do:
+
 * Clone the repository:
 
-`git clone repo_url`
+`git clone git@github.com:jknabl/snapshot_association.git`
 
 * Include in Gemfile:
 
 `gem 'snapshot_association', path: /path/to/repo`
+
+Otherwise, just include in your Gemfile directly from Github:
+
+`gem 'snapshot_association', git: git@github.com:jknabl/snapshot_association.git`
 
 ## Usage
 
