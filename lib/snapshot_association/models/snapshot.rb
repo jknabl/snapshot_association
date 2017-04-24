@@ -43,14 +43,14 @@ module SnapshotAssociation
       SnapshotAssociation::Snapshot.shared_columns(base_klass, snapshot_klass)
     end
 
-
     def self.write_columns(scope, shared_columns, old_column_mapping, association_name)
       shared_columns.each do |name|
         scope.write_attribute(name, scope.send(association_name).send(name.sub("#{association_name}_", "")))
       end
 
+      base_cols = scope.class.columns.map(&:name).grep(Regexp.new "#{association_name}_")
       old_column_mapping.each do |snapshot_klass_col, base_class_col|
-        scope.write_attribute(base_class_col, scope.send(association_name).send(snapshot_klass_col))
+        scope.write_attribute(base_class_col, scope.send(association_name).send(snapshot_klass_col)) if base_cols.include? base_class_col
       end
     end
   end
