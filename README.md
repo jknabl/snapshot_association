@@ -43,16 +43,15 @@ Say you have snapshot columns on a target table, but you've since refactored col
 
 The mapping between `AssociatedTable.new_email` and `GreatModel.associated_table_email` would be lost here.
 
-To get around this, you may provide the `snapshot` directive with a `column_mapping` option. This option's value should be a hash keyed by old column names on the source table mapped to new column names on the source table. For example:
+To get around this, you may provide the `snapshot` directive with a `column_mapping` option. This option should be a hash keyed by column names on the snapshot table with corresponding column names on the target table as values. For example:
 
 ```
-MAPPING = {
-  email: 'new_email'
-}
-
-...
-
 class GreatModel
+
+  MAPPING = {
+    new_email: 'associated_table_email'
+  }.freeze
+
   snapshot :associated_table, column_mapping: MAPPING
 end
 ```
