@@ -1,5 +1,7 @@
 # snapshot_association
 
+[![CircleCI](https://circleci.com/gh/jknabl/snapshot_association/tree/master.svg?style=shield&circle-token=3dd0f45013526a0c1b31d8b137cf0e330fa605a8)](https://circleci.com/gh/jknabl/snapshot_association/tree/master)
+
 Store a 'snapshot' of the state of columns on a class to denormalized columns on a different class, using Rails callbacks.
 
 ## Installation
