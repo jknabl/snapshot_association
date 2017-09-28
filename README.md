@@ -65,3 +65,5 @@ end
 ```
 
 This will instruct the snapshot to translate any old column names found on the target table (e.g. `GreatModel.associated_table_email`) with the renamed column on the source table (e.g. `AssociatedTable.new_email`).
+
+---
