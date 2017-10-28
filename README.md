@@ -26,6 +26,7 @@ Include the `snapshot` directive followed by a table name in a model definition:
 
 ```
 class GreatModel < ApplicationRecord
+  extend SnapshotAssociation::SnapshotMethods
 
   has_many :associated_tables
   snapshot :associated_table

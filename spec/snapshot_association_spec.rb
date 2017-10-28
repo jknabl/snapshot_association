@@ -29,6 +29,7 @@ RSpec.describe SnapshotAssociation do
   describe 'adding a snapshot association to a class' do
     it 'sets and persists snapshot fields on a base model' do
       class ThingEvent < ActiveRecord::Base
+        extend ::SnapshotAssociation::SnapshotMethods
         snapshot :thing
       end
 
@@ -48,6 +49,7 @@ RSpec.describe SnapshotAssociation do
 
     it 'sets and persists snapshot fields with custom column mappings' do
       class ThingEvent < ActiveRecord::Base
+        extend ::SnapshotAssociation::SnapshotMethods
         snapshot :thing, column_mapping: {renamed_email: 'thing_email'}
       end
 

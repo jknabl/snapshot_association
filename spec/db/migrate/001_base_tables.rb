@@ -1,4 +1,4 @@
-class BaseTables < ActiveRecord::Migration
+class BaseTables < ActiveRecord::Migration[5.0]
   def change
     create_table :things do |t|
       t.column :name, :string
